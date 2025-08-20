@@ -45,7 +45,7 @@ func initRouter(r *gin.Engine) {
 func main() {
 	// 初始化数据库
 	var err error
-	global.Db, err = sql.Open("sqlite3", "../todo.db")
+	global.Db, err = sql.Open("sqlite3", "db/todo.db")
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
