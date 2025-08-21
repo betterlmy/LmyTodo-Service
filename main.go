@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"todo-service/global"
 	"todo-service/src/api"
 	"todo-service/src/repository"
@@ -30,6 +31,12 @@ func initRouter(r *gin.Engine) {
 	r.Use(api.LoggerMiddleware())
 
 	// 公开路由
+	r.POST("/api/test", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Test POST endpoint"})
+	})
+	r.GET("/api/test", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Test GET endpoint"})
+	})
 	r.POST("/api/register", api.Register)
 	r.POST("/api/login", api.Login)
 

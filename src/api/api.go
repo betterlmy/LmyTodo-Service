@@ -130,7 +130,7 @@ func AuthMiddleware() gin.HandlerFunc {
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
-		
+
 		// 读取请求体
 		var requestBody []byte
 		if c.Request.Body != nil {
@@ -158,8 +158,8 @@ func LoggerMiddleware() gin.HandlerFunc {
 			requestBodyStr = "empty"
 		}
 
-		log.Printf("[REQUEST] %s %s | Body: %s | IP: %s | UserAgent: %s", 
-			c.Request.Method, 
+		log.Printf("[REQUEST] %s %s | Body: %s | IP: %s | UserAgent: %s",
+			c.Request.Method,
 			c.Request.URL.Path,
 			requestBodyStr,
 			c.ClientIP(),
@@ -172,20 +172,20 @@ func LoggerMiddleware() gin.HandlerFunc {
 		// 记录响应信息
 		duration := time.Since(start)
 		statusCode := c.Writer.Status()
-		
+
 		// 获取用户信息（如果有的话）
 		userID, userExists := c.Get("userID")
 		username, usernameExists := c.Get("username")
-		
+
 		var userInfo string
 		if userExists && usernameExists {
 			userInfo = " | User: " + username.(string) + " (ID:" + strconv.Itoa(userID.(int)) + ")"
 		} else {
 			userInfo = " | User: anonymous"
 		}
-		
-		log.Printf("[RESPONSE] %s %s | Status: %d | Duration: %v%s", 
-			c.Request.Method, 
+
+		log.Printf("[RESPONSE] %s %s | Status: %d | Duration: %v%s",
+			c.Request.Method,
 			c.Request.URL.Path,
 			statusCode,
 			duration,
