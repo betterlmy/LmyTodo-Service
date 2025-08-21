@@ -26,6 +26,9 @@ func initRouter(r *gin.Engine) {
 		c.Next()
 	})
 
+	// 添加日志中间件
+	r.Use(api.LoggerMiddleware())
+
 	// 公开路由
 	r.POST("/api/register", api.Register)
 	r.POST("/api/login", api.Login)

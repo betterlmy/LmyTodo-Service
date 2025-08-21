@@ -1,6 +1,9 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -50,8 +53,6 @@ func Login(c *gin.Context) {
 		return
 	}
 	time.Sleep(time.Second)
-
-	log.Printf("User login req: %+v", req)
 
 	// 查找用户
 	var user repository.User
@@ -122,6 +123,74 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("userID", claims.UserID)
 		c.Set("username", claims.Username)
 		c.Next()
+	}
+}
+
+// LoggerMiddleware 统一日志中间件
+func LoggerMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		
+		// 读取请求体
+		var requestBody []byte
+		if c.Request.Body != nil {
+			bodyBytes, err := io.ReadAll(c.Request.Body)
+			if err == nil {
+				requestBody = bodyBytes
+				// 重新设置请求体，因为读取后会被消耗
+				c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+			}
+		}
+
+		// 记录请求信息
+		var requestBodyStr string
+		if len(requestBody) > 0 && json.Valid(requestBody) {
+			// 如果是有效的JSON，格式化输出
+			var jsonData interface{}
+			if err := json.Unmarshal(requestBody, &jsonData); err == nil {
+				if formattedJSON, err := json.Marshal(jsonData); err == nil {
+					requestBodyStr = string(formattedJSON)
+				}
+			}
+		} else if len(requestBody) > 0 {
+			requestBodyStr = string(requestBody)
+		} else {
+			requestBodyStr = "empty"
+		}
+
+		log.Printf("[REQUEST] %s %s | Body: %s | IP: %s | UserAgent: %s", 
+			c.Request.Method, 
+			c.Request.URL.Path,
+			requestBodyStr,
+			c.ClientIP(),
+			c.Request.UserAgent(),
+		)
+
+		// 处理请求
+		c.Next()
+
+		// 记录响应信息
+		duration := time.Since(start)
+		statusCode := c.Writer.Status()
+		
+		// 获取用户信息（如果有的话）
+		userID, userExists := c.Get("userID")
+		username, usernameExists := c.Get("username")
+		
+		var userInfo string
+		if userExists && usernameExists {
+			userInfo = " | User: " + username.(string) + " (ID:" + strconv.Itoa(userID.(int)) + ")"
+		} else {
+			userInfo = " | User: anonymous"
+		}
+		
+		log.Printf("[RESPONSE] %s %s | Status: %d | Duration: %v%s", 
+			c.Request.Method, 
+			c.Request.URL.Path,
+			statusCode,
+			duration,
+			userInfo,
+		)
 	}
 }
 
