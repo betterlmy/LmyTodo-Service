@@ -1,0 +1,452 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "TODO服务后端API接口文档",
+        "title": "TODO API",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:8080",
+    "paths": {
+        "/api/login": {
+            "post": {
+                "description": "用户登录获取JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户认证"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "登录凭据",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登录失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/profile": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前登录用户的基本信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "获取当前用户信息",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "description": "创建新用户账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户认证"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "description": "注册信息",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "注册失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/todos/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "为当前用户创建一个新的TODO任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "创建新的TODO任务",
+                "parameters": [
+                    {
+                        "description": "TODO信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.TodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/todos/delete": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除指定的TODO任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "删除TODO任务",
+                "parameters": [
+                    {
+                        "description": "删除信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.DeleteTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/todos/list": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户的所有TODO任务，按创建时间倒序排列",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "获取用户的TODO列表",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/todos/update": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新指定的TODO任务信息，支持部分字段更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "更新TODO任务",
+                "parameters": [
+                    {
+                        "description": "更新信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.DeleteTodoRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "TODO ID",
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "api.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "description": "密码",
+                    "type": "string",
+                    "example": "password123"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "api.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string",
+                    "example": "password123"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string",
+                    "example": "newuser"
+                }
+            }
+        },
+        "api.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，0表示成功",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "响应数据，成功时包含具体数据",
+                    "type": "object"
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string",
+                    "example": "成功"
+                }
+            }
+        },
+        "api.TodoRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "description": "任务描述",
+                    "type": "string",
+                    "example": "学习Go语言基础语法和框架"
+                },
+                "title": {
+                    "description": "任务标题",
+                    "type": "string",
+                    "example": "学习Go语言"
+                }
+            }
+        },
+        "api.UpdateTodoRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "completed": {
+                    "description": "是否完成（可选）",
+                    "type": "boolean",
+                    "example": true
+                },
+                "description": {
+                    "description": "任务描述（可选）",
+                    "type": "string",
+                    "example": "更新后的描述"
+                },
+                "id": {
+                    "description": "TODO ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "title": {
+                    "description": "任务标题（可选）",
+                    "type": "string",
+                    "example": "更新后的标题"
+                }
+            }
+        },
+        "repository.Todo": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "description": "是否完成",
+                    "type": "boolean",
+                    "example": false
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "description": {
+                    "description": "任务描述",
+                    "type": "string",
+                    "example": "学习Go语言基础语法"
+                },
+                "id": {
+                    "description": "任务ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "is_deleted": {
+                    "description": "是否删除",
+                    "type": "boolean",
+                    "example": false
+                },
+                "title": {
+                    "description": "任务标题",
+                    "type": "string",
+                    "example": "学习Go语言"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "repository.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "admin@example.com"
+                },
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        }
+    }
+}

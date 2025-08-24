@@ -1,3 +1,20 @@
+// Package api TODO服务API接口
+// @title TODO Service API
+// @version 1.0
+// @description TODO任务管理服务API文档
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+// @host 127.0.0.1:8080
+// @BasePath /api/v1
+// @schemes http https
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description JWT token with Bearer prefix
 package api
 
 import (
@@ -17,17 +34,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Register 用户注册
+// @Summary 用户注册
+// @Description 创建新用户账号
+// @Tags 用户认证
+// @Accept json
+// @Produce json
+// @Param user body RegisterRequest true "注册信息"
+// @Success 200 {object} Response{data=map[string]string} "注册成功"
+// @Failure 200 {object} Response "注册失败"
+// @Router /api/register [post]
 func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "参数错误: "+err.Error()))
 		return
 	}
 
 	// 加密密码
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "密码加密失败"))
 		return
 	}
 
@@ -36,23 +63,38 @@ func Register(c *gin.Context) {
 		req.Username, req.Email, string(hashedPassword))
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			c.JSON(http.StatusConflict, gin.H{"error": "Username or email already exists"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeUserExists, "用户名或邮箱已存在"))
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "创建用户失败"))
 		}
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+	c.JSON(http.StatusOK, SuccessResponse(gin.H{"message": "用户创建成功"}))
 }
 
+// Login 用户登录
+// @Summary 用户登录
+// @Description 用户登录获取JWT token
+// @Tags 用户认证
+// @Accept json
+// @Produce json
+// @Param credentials body LoginRequest true "登录凭据"
+// @Success 200 {object} Response{data=map[string]interface{}} "登录成功，返回token和用户信息"
+// @Failure 200 {object} Response "登录失败"
+// @Router /api/login [post]
 func Login(c *gin.Context) {
 	var req LoginRequest
+	defer func() {
+		if r := recover(); r != nil {
+			c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "服务器错误"))
+		}
+	}()
+
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "参数错误: "+err.Error()))
 		return
 	}
-	time.Sleep(time.Second)
 
 	// 查找用户
 	var user repository.User
@@ -60,13 +102,13 @@ func Login(c *gin.Context) {
 	err := global.Db.QueryRow("SELECT id, username, email, password FROM users WHERE username = ?", req.Username).
 		Scan(&user.ID, &user.Username, &user.Email, &hashedPassword)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidCredentials, "账号密码错误"))
 		return
 	}
 
 	// 验证密码
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(req.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidCredentials, "账号密码错误"))
 		return
 	}
 
@@ -83,39 +125,39 @@ func Login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(global.JwtSecret)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "生成token失败"))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, SuccessResponse(gin.H{
 		"token": tokenString,
 		"user":  user,
-	})
+	}))
 }
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeUnauthorized, "缺少Authorization头"))
 			c.Abort()
 			return
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Bearer token required"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeUnauthorized, "需要Bearer token"))
 			c.Abort()
 			return
 		}
 
 		claims := &Claims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 			return global.JwtSecret, nil
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeTokenError, "无效的token"))
 			c.Abort()
 			return
 		}
@@ -146,7 +188,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		var requestBodyStr string
 		if len(requestBody) > 0 && json.Valid(requestBody) {
 			// 如果是有效的JSON，格式化输出
-			var jsonData interface{}
+			var jsonData any
 			if err := json.Unmarshal(requestBody, &jsonData); err == nil {
 				if formattedJSON, err := json.Marshal(jsonData); err == nil {
 					requestBodyStr = string(formattedJSON)
@@ -194,6 +236,16 @@ func LoggerMiddleware() gin.HandlerFunc {
 	}
 }
 
+// GetTodos 获取TODO列表
+// @Summary 获取用户的TODO列表
+// @Description 获取当前用户的所有TODO任务，按创建时间倒序排列
+// @Tags TODO管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} Response{data=[]repository.Todo} "获取成功"
+// @Failure 200 {object} Response "获取失败"
+// @Router /api/todos/list [post]
 func GetTodos(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -201,7 +253,7 @@ func GetTodos(c *gin.Context) {
 		SELECT id, title, description, completed, created_at, updated_at 
 		FROM todos WHERE user_id = ? ORDER BY created_at DESC`, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todos"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "获取TODO列表失败"))
 		return
 	}
 	defer rows.Close()
@@ -212,20 +264,31 @@ func GetTodos(c *gin.Context) {
 		todo.UserID = userID
 		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed, &todo.CreatedAt, &todo.UpdatedAt)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan todo"})
+			c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "解析TODO数据失败"))
 			return
 		}
 		todos = append(todos, todo)
 	}
 
-	c.JSON(http.StatusOK, todos)
+	c.JSON(http.StatusOK, SuccessResponse(todos))
 }
 
+// CreateTodo 创建TODO
+// @Summary 创建新的TODO任务
+// @Description 为当前用户创建一个新的TODO任务
+// @Tags TODO管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param todo body TodoRequest true "TODO信息"
+// @Success 200 {object} Response{data=repository.Todo} "创建成功"
+// @Failure 200 {object} Response "创建失败"
+// @Router /api/todos/create [post]
 func CreateTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req TodoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "参数错误: "+err.Error()))
 		return
 	}
 
@@ -233,7 +296,7 @@ func CreateTodo(c *gin.Context) {
 		INSERT INTO todos (user_id, title, description) 
 		VALUES (?, ?, ?)`, userID, req.Title, req.Description)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create todo"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "创建TODO失败"))
 		return
 	}
 
@@ -248,31 +311,32 @@ func CreateTodo(c *gin.Context) {
 		UpdatedAt:   time.Now(),
 	}
 
-	c.JSON(http.StatusCreated, todo)
+	c.JSON(http.StatusOK, SuccessResponse(todo))
 }
 
+// UpdateTodo 更新TODO
+// @Summary 更新TODO任务
+// @Description 更新指定的TODO任务信息，支持部分字段更新
+// @Tags TODO管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param todo body UpdateTodoRequest true "更新信息"
+// @Success 200 {object} Response{data=map[string]string} "更新成功"
+// @Failure 200 {object} Response "更新失败"
+// @Router /api/todos/update [post]
 func UpdateTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
-	todoID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
-		return
-	}
-
-	var req struct {
-		Title       *string `json:"title"`
-		Description *string `json:"description"`
-		Completed   *bool   `json:"completed"`
-	}
+	var req UpdateTodoRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "参数错误: "+err.Error()))
 		return
 	}
 
 	// 构建动态更新查询
 	updates := []string{}
-	args := []interface{}{}
+	args := []any{}
 
 	if req.Title != nil {
 		updates = append(updates, "title = ?")
@@ -288,52 +352,74 @@ func UpdateTodo(c *gin.Context) {
 	}
 
 	if len(updates) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No fields to update"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "没有要更新的字段"))
 		return
 	}
 
 	updates = append(updates, "updated_at = CURRENT_TIMESTAMP")
-	args = append(args, userID, todoID)
+	args = append(args, userID, req.ID)
 
 	query := "UPDATE todos SET " + strings.Join(updates, ", ") + " WHERE user_id = ? AND id = ?"
 	result, err := global.Db.Exec(query, args...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update todo"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "更新TODO失败"))
 		return
 	}
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeNotFound, "TODO不存在"))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Todo updated successfully"})
+	c.JSON(http.StatusOK, SuccessResponse(gin.H{"message": "TODO更新成功"}))
 }
 
+// DeleteTodo 删除TODO
+// @Summary 删除TODO任务
+// @Description 删除指定的TODO任务
+// @Tags TODO管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param todo body DeleteTodoRequest true "删除信息"
+// @Success 200 {object} Response{data=map[string]string} "删除成功"
+// @Failure 200 {object} Response "删除失败"
+// @Router /api/todos/delete [post]
 func DeleteTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
-	todoID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
+	var req DeleteTodoRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, ErrorResponse(CodeInvalidParams, "参数错误: "+err.Error()))
 		return
 	}
 
-	result, err := global.Db.Exec("DELETE FROM todos WHERE user_id = ? AND id = ?", userID, todoID)
+	result, err := global.Db.Exec("DELETE FROM todos WHERE user_id = ? AND id = ?", userID, req.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete todo"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "删除TODO失败"))
 		return
 	}
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeNotFound, "TODO不存在"))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Todo deleted successfully"})
+	c.JSON(http.StatusOK, SuccessResponse(gin.H{"message": "TODO删除成功"}))
 }
 
+// GetProfile 获取用户信息
+// @Summary 获取当前用户信息
+// @Description 获取当前登录用户的基本信息
+// @Tags 用户管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} Response{data=repository.User} "获取成功"
+// @Failure 200 {object} Response "获取失败"
+// @Router /api/profile [post]
 func GetProfile(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -341,9 +427,9 @@ func GetProfile(c *gin.Context) {
 	err := global.Db.QueryRow("SELECT id, username, email FROM users WHERE id = ?", userID).
 		Scan(&user.ID, &user.Username, &user.Email)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusOK, ErrorResponse(CodeNotFound, "用户不存在"))
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, SuccessResponse(user))
 }

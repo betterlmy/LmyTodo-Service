@@ -1,0 +1,306 @@
+definitions:
+  api.DeleteTodoRequest:
+    properties:
+      id:
+        description: TODO ID
+        example: 1
+        type: integer
+    required:
+    - id
+    type: object
+  api.LoginRequest:
+    properties:
+      password:
+        description: 密码
+        example: password123
+        type: string
+      username:
+        description: 用户名
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  api.RegisterRequest:
+    properties:
+      email:
+        description: 邮箱
+        example: user@example.com
+        type: string
+      password:
+        description: 密码
+        example: password123
+        type: string
+      username:
+        description: 用户名
+        example: newuser
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  api.Response:
+    properties:
+      code:
+        description: 响应码，0表示成功
+        example: 0
+        type: integer
+      data:
+        description: 响应数据，成功时包含具体数据
+        type: object
+      message:
+        description: 响应消息
+        example: 成功
+        type: string
+    type: object
+  api.TodoRequest:
+    properties:
+      description:
+        description: 任务描述
+        example: 学习Go语言基础语法和框架
+        type: string
+      title:
+        description: 任务标题
+        example: 学习Go语言
+        type: string
+    required:
+    - title
+    type: object
+  api.UpdateTodoRequest:
+    properties:
+      completed:
+        description: 是否完成（可选）
+        example: true
+        type: boolean
+      description:
+        description: 任务描述（可选）
+        example: 更新后的描述
+        type: string
+      id:
+        description: TODO ID
+        example: 1
+        type: integer
+      title:
+        description: 任务标题（可选）
+        example: 更新后的标题
+        type: string
+    required:
+    - id
+    type: object
+  repository.Todo:
+    properties:
+      completed:
+        description: 是否完成
+        example: false
+        type: boolean
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      description:
+        description: 任务描述
+        example: 学习Go语言基础语法
+        type: string
+      id:
+        description: 任务ID
+        example: 1
+        type: integer
+      is_deleted:
+        description: 是否删除
+        example: false
+        type: boolean
+      title:
+        description: 任务标题
+        example: 学习Go语言
+        type: string
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      user_id:
+        description: 用户ID
+        example: 1
+        type: integer
+    type: object
+  repository.User:
+    properties:
+      email:
+        description: 邮箱
+        example: admin@example.com
+        type: string
+      id:
+        description: 用户ID
+        example: 1
+        type: integer
+      username:
+        description: 用户名
+        example: admin
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact:
+    name: API Support
+    url: http://www.swagger.io/support
+  description: TODO服务后端API接口文档
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: TODO API
+  version: "1.0"
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录获取JWT token
+      parameters:
+      - description: 登录凭据
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: 用户登录
+      tags:
+      - 用户认证
+  /api/profile:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的基本信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 用户管理
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: 创建新用户账号
+      parameters:
+      - description: 注册信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 注册失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: 用户注册
+      tags:
+      - 用户认证
+  /api/todos/create:
+    post:
+      consumes:
+      - application/json
+      description: 为当前用户创建一个新的TODO任务
+      parameters:
+      - description: TODO信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建新的TODO任务
+      tags:
+      - TODO管理
+  /api/todos/delete:
+    post:
+      consumes:
+      - application/json
+      description: 删除指定的TODO任务
+      parameters:
+      - description: 删除信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.DeleteTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除TODO任务
+      tags:
+      - TODO管理
+  /api/todos/list:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前用户的所有TODO任务，按创建时间倒序排列
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户的TODO列表
+      tags:
+      - TODO管理
+  /api/todos/update:
+    post:
+      consumes:
+      - application/json
+      description: 更新指定的TODO任务信息，支持部分字段更新
+      parameters:
+      - description: 更新信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新TODO任务
+      tags:
+      - TODO管理
+schemes:
+- http
+swagger: "2.0"

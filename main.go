@@ -16,7 +16,7 @@ func initRouter(r *gin.Engine) {
 	// CORS中间件
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 
 		if c.Request.Method == "OPTIONS" {
@@ -32,10 +32,7 @@ func initRouter(r *gin.Engine) {
 
 	// 公开路由
 	r.POST("/api/test", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Test POST endpoint"})
-	})
-	r.GET("/api/test", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Test GET endpoint"})
+		c.JSON(http.StatusOK, api.SuccessResponse(gin.H{"message": "Test POST endpoint"}))
 	})
 	r.POST("/api/register", api.Register)
 	r.POST("/api/login", api.Login)
@@ -44,14 +41,27 @@ func initRouter(r *gin.Engine) {
 	auth := r.Group("/api")
 	auth.Use(api.AuthMiddleware())
 	{
-		auth.GET("/todos", api.GetTodos)
-		auth.POST("/todos", api.CreateTodo)
-		auth.PUT("/todos/:id", api.UpdateTodo)
-		auth.DELETE("/todos/:id", api.DeleteTodo)
-		auth.GET("/profile", api.GetProfile)
+		auth.POST("/todos/list", api.GetTodos)
+		auth.POST("/todos/create", api.CreateTodo)
+		auth.POST("/todos/update", api.UpdateTodo)
+		auth.POST("/todos/delete", api.DeleteTodo)
+		auth.POST("/profile", api.GetProfile)
 	}
 }
 
+// @title TODO API
+// @version 1.0
+// @description TODO服务后端API接口文档
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host 127.0.0.1:8080
+// @BasePath
+// @schemes http
 func main() {
 	// 初始化数据库
 	var err error

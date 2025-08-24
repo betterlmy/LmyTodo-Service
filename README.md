@@ -31,6 +31,27 @@ go run main.go
 
 ## API接口
 
+所有接口统一使用POST请求，返回HTTP状态码200，具体的业务状态通过响应体中的code字段判断。
+
+### 统一响应格式
+```json
+{
+  "code": 0,
+  "message": "成功",
+  "data": {}
+}
+```
+
+### 错误码说明
+- 0: 成功
+- 10001: 参数错误
+- 10002: 用户已存在
+- 10003: 账号密码错误
+- 10004: Token错误
+- 10005: 资源不存在
+- 10006: 内部错误
+- 10007: 未授权
+
 ### 认证接口
 
 - `POST /api/register` - 用户注册
@@ -38,11 +59,11 @@ go run main.go
 
 ### TODO接口（需要JWT认证）
 
-- `GET /api/todos` - 获取当前用户的所有TODO
-- `POST /api/todos` - 创建新的TODO
-- `PUT /api/todos/:id` - 更新TODO
-- `DELETE /api/todos/:id` - 删除TODO
-- `GET /api/profile` - 获取用户信息
+- `POST /api/todos/list` - 获取当前用户的所有TODO
+- `POST /api/todos/create` - 创建新的TODO
+- `POST /api/todos/update` - 更新TODO
+- `POST /api/todos/delete` - 删除TODO
+- `POST /api/profile` - 获取用户信息
 
 ## 数据模型
 
@@ -74,8 +95,16 @@ go run main.go
 ### 更新TODO
 ```json
 {
+  "id": 1,
   "title": "新标题",
   "description": "新描述",
   "completed": true
+}
+```
+
+### 删除TODO
+```json
+{
+  "id": 1
 }
 ```
