@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"todo-service/global"
@@ -9,7 +8,7 @@ import (
 	"todo-service/src/repository"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 func initRouter(r *gin.Engine) {
@@ -64,19 +63,22 @@ func initRouter(r *gin.Engine) {
 // @schemes http
 func main() {
 	// 初始化数据库
+	config := repository.GetDatabaseConfig()
 	var err error
-	global.Db, err = sql.Open("sqlite3", "db/todo.db")
+
+	global.Db, err = repository.ConnectDatabase(config)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	defer global.Db.Close()
 
-	// 创建表
-	repository.CreateTables()
+	// // 创建表
+	// repository.CreateTables()
 
 	// 设置路由
 	r := gin.Default()
 	initRouter(r)
 
+	log.Printf("Server starting on port 8080 with PostgreSQL database")
 	r.Run(":8080")
 }
