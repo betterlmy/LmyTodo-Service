@@ -36,7 +36,7 @@ func initRouter(r *gin.Engine) {
 	r.POST("/api/register", api.Register)
 	r.POST("/api/login", api.Login)
 
-	// 需要认证的路由
+	// 需要认证的路由 - v1 API (保持向后兼容)
 	auth := r.Group("/api")
 	auth.Use(api.AuthMiddleware())
 	{
@@ -45,6 +45,32 @@ func initRouter(r *gin.Engine) {
 		auth.POST("/todos/update", api.UpdateTodo)
 		auth.POST("/todos/delete", api.DeleteTodo)
 		auth.POST("/profile", api.GetProfile)
+	}
+
+	// v2 API - 扩展功能
+	v2 := r.Group("/api/v2")
+	v2.Use(api.AuthMiddleware())
+	{
+		// 扩展TODO管理
+		v2.POST("/todos/list", api.GetTodosExtended)
+		v2.POST("/todos/create", api.CreateTodoExtended)
+		v2.POST("/todos/update", api.UpdateTodoExtended)
+		v2.POST("/todos/search", api.SearchTodos)
+
+		// 分类管理
+		v2.POST("/categories", api.GetCategories)
+		v2.POST("/categories/create", api.CreateCategory)
+		v2.POST("/categories/update", api.UpdateCategory)
+		v2.POST("/categories/delete", api.DeleteCategory)
+
+		// 用户设置
+		v2.POST("/settings", api.GetUserSettings)
+		v2.POST("/settings/update", api.UpdateUserSettings)
+
+		// 数据同步
+		v2.POST("/sync/version", api.GetSyncVersion)
+		v2.POST("/sync/todos", api.IncrementalSync)
+		v2.POST("/sync/batch", api.BatchSync)
 	}
 }
 

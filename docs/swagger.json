@@ -258,9 +258,558 @@
                     }
                 }
             }
+        },
+        "/api/v2/categories": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户的所有分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "获取用户的分类列表",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/categories/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "为当前用户创建一个新的分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "创建新分类",
+                "parameters": [
+                    {
+                        "description": "分类信息",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/categories/delete": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除指定的分类（软删除）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "删除分类",
+                "parameters": [
+                    {
+                        "description": "删除信息",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.DeleteCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/categories/update": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新指定的分类信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "更新分类",
+                "parameters": [
+                    {
+                        "description": "更新信息",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/settings": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户的个性化设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户设置"
+                ],
+                "summary": "获取用户设置",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/settings/update": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新当前用户的个性化设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户设置"
+                ],
+                "summary": "更新用户设置",
+                "parameters": [
+                    {
+                        "description": "设置信息",
+                        "name": "settings",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UserSettingsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/sync/batch": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "批量上传客户端数据并处理冲突",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据同步"
+                ],
+                "summary": "批量同步数据",
+                "parameters": [
+                    {
+                        "description": "批量同步数据",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.BatchSyncRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "同步失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/sync/todos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "基于时间戳获取增量更新的数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据同步"
+                ],
+                "summary": "增量同步数据",
+                "parameters": [
+                    {
+                        "description": "同步参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.IncrementalSyncRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "同步失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/sync/version": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取服务器当前的同步版本号，用于增量同步",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据同步"
+                ],
+                "summary": "获取当前同步版本号",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/todos/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "为当前用户创建一个新的TODO任务，支持优先级、标签等扩展字段",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "创建新的扩展TODO任务",
+                "parameters": [
+                    {
+                        "description": "TODO信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.ExtendedTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/todos/list": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户的所有TODO任务，支持分页和扩展字段",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "获取用户的扩展TODO列表",
+                "parameters": [
+                    {
+                        "description": "分页参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GetTodosRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/todos/search": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据关键词搜索用户的TODO任务，支持标题和描述搜索",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "搜索TODO任务",
+                "parameters": [
+                    {
+                        "description": "搜索参数",
+                        "name": "search",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.SearchTodosRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "搜索失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/todos/update": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新指定的TODO任务信息，支持扩展字段的部分更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "更新扩展TODO任务",
+                "parameters": [
+                    {
+                        "description": "更新信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateExtendedTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "api.BatchSyncRequest": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.CategorySyncItem"
+                    }
+                },
+                "settings": {
+                    "$ref": "#/definitions/repository.UserSettingsSyncItem"
+                },
+                "todos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.TodoSyncItem"
+                    }
+                }
+            }
+        },
+        "api.BatchSyncResponse": {
+            "type": "object",
+            "properties": {
+                "conflicts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.SyncResult"
+                    }
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.SyncResult"
+                    }
+                },
+                "success": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.SyncResult"
+                    }
+                }
+            }
+        },
+        "api.CategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#FF5722"
+                },
+                "icon": {
+                    "type": "string",
+                    "example": "work"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "工作"
+                }
+            }
+        },
+        "api.DeleteCategoryRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "api.DeleteTodoRequest": {
             "type": "object",
             "required": [
@@ -271,6 +820,70 @@
                     "description": "TODO ID",
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "api.ExtendedTodoRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "description": {
+                    "type": "string",
+                    "example": "学习Go语言基础语法和框架"
+                },
+                "due_date": {
+                    "type": "string",
+                    "example": "2023-12-31T23:59:59Z"
+                },
+                "priority": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "reminder": {
+                    "type": "string",
+                    "example": "2023-12-30T09:00:00Z"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"工作\"",
+                        "\"重要\"]"
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "example": "学习Go语言"
+                }
+            }
+        },
+        "api.GetTodosRequest": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "offset": {
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "api.IncrementalSyncRequest": {
+            "type": "object",
+            "properties": {
+                "since": {
+                    "type": "integer",
+                    "example": 1640995200000
                 }
             }
         },
@@ -337,6 +950,59 @@
                 }
             }
         },
+        "api.SearchTodosRequest": {
+            "type": "object",
+            "required": [
+                "keyword"
+            ],
+            "properties": {
+                "keyword": {
+                    "type": "string",
+                    "example": "学习"
+                },
+                "limit": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "offset": {
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "api.SyncResponse": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.CategorySyncItem"
+                    }
+                },
+                "server_version": {
+                    "type": "integer",
+                    "example": 1640995200000
+                },
+                "settings": {
+                    "$ref": "#/definitions/repository.UserSettingsSyncItem"
+                },
+                "todos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.TodoSyncItem"
+                    }
+                }
+            }
+        },
+        "api.SyncVersionResponse": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "integer",
+                    "example": 1640995200000
+                }
+            }
+        },
         "api.TodoRequest": {
             "type": "object",
             "required": [
@@ -352,6 +1018,81 @@
                     "description": "任务标题",
                     "type": "string",
                     "example": "学习Go语言"
+                }
+            }
+        },
+        "api.UpdateCategoryRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#FF5722"
+                },
+                "icon": {
+                    "type": "string",
+                    "example": "work"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "工作"
+                }
+            }
+        },
+        "api.UpdateExtendedTodoRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "completed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "description": {
+                    "type": "string",
+                    "example": "更新后的描述"
+                },
+                "due_date": {
+                    "type": "string",
+                    "example": "2023-12-31T23:59:59Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "priority": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "reminder": {
+                    "type": "string",
+                    "example": "2023-12-30T09:00:00Z"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"工作\"",
+                        "\"重要\"]"
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "example": "更新后的标题"
                 }
             }
         },
@@ -383,9 +1124,134 @@
                 }
             }
         },
+        "api.UserSettingsRequest": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string",
+                    "example": "zh-CN"
+                },
+                "notification_time": {
+                    "type": "string",
+                    "example": "09:00"
+                },
+                "theme": {
+                    "type": "string",
+                    "example": "light"
+                },
+                "timezone": {
+                    "type": "string",
+                    "example": "Asia/Shanghai"
+                }
+            }
+        },
+        "repository.Category": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "description": "分类颜色",
+                    "type": "string",
+                    "example": "#FF5722"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "icon": {
+                    "description": "分类图标",
+                    "type": "string",
+                    "example": "work"
+                },
+                "id": {
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "is_deleted": {
+                    "description": "是否删除",
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "description": "分类名称",
+                    "type": "string",
+                    "example": "工作"
+                },
+                "sync_version": {
+                    "description": "同步版本号",
+                    "type": "integer",
+                    "example": 1640995200000
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "repository.CategorySyncItem": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_deleted": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sync_version": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "repository.SyncResult": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "local_id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "server_id": {
+                    "type": "integer"
+                },
+                "sync_version": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "repository.Todo": {
             "type": "object",
             "properties": {
+                "category_id": {
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
+                },
                 "completed": {
                     "description": "是否完成",
                     "type": "boolean",
@@ -401,6 +1267,11 @@
                     "type": "string",
                     "example": "学习Go语言基础语法"
                 },
+                "due_date": {
+                    "description": "截止日期",
+                    "type": "string",
+                    "example": "2023-12-31T23:59:59Z"
+                },
                 "id": {
                     "description": "任务ID",
                     "type": "integer",
@@ -410,6 +1281,32 @@
                     "description": "是否删除",
                     "type": "boolean",
                     "example": false
+                },
+                "priority": {
+                    "description": "优先级",
+                    "type": "integer",
+                    "example": 1
+                },
+                "reminder": {
+                    "description": "提醒时间",
+                    "type": "string",
+                    "example": "2023-12-30T09:00:00Z"
+                },
+                "sync_version": {
+                    "description": "同步版本号",
+                    "type": "integer",
+                    "example": 1640995200000
+                },
+                "tags": {
+                    "description": "标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"工作\"",
+                        "\"重要\"]"
+                    ]
                 },
                 "title": {
                     "description": "任务标题",
@@ -428,9 +1325,58 @@
                 }
             }
         },
+        "repository.TodoSyncItem": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "completed": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_deleted": {
+                    "type": "boolean"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "reminder": {
+                    "type": "string"
+                },
+                "sync_version": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "repository.User": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
                 "email": {
                     "description": "邮箱",
                     "type": "string",
@@ -441,10 +1387,83 @@
                     "type": "integer",
                     "example": 1
                 },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
                 "username": {
                     "description": "用户名",
                     "type": "string",
                     "example": "admin"
+                }
+            }
+        },
+        "repository.UserSettings": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "language": {
+                    "description": "语言设置",
+                    "type": "string",
+                    "example": "zh-CN"
+                },
+                "notification_time": {
+                    "description": "通知时间",
+                    "type": "string",
+                    "example": "09:00"
+                },
+                "sync_version": {
+                    "description": "同步版本号",
+                    "type": "integer",
+                    "example": 1640995200000
+                },
+                "theme": {
+                    "description": "主题设置 (light/dark/auto)",
+                    "type": "string",
+                    "example": "light"
+                },
+                "timezone": {
+                    "description": "时区设置",
+                    "type": "string",
+                    "example": "Asia/Shanghai"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "repository.UserSettingsSyncItem": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string"
+                },
+                "notification_time": {
+                    "type": "string"
+                },
+                "sync_version": {
+                    "type": "integer"
+                },
+                "theme": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }

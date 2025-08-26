@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
+    sync_version BIGINT DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000, -- 毫秒时间戳
     UNIQUE(user_id, name) -- 同一用户下分类名称唯一
 );
 
@@ -36,7 +37,8 @@ CREATE TABLE IF NOT EXISTS user_settings (
     language VARCHAR(10) DEFAULT 'zh-CN',
     timezone VARCHAR(50) DEFAULT 'Asia/Shanghai',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    sync_version BIGINT DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000 -- 毫秒时间戳
 );
 
 -- TODO任务表（扩展版）
@@ -67,6 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id_name ON categories(user_id, name);
 CREATE INDEX IF NOT EXISTS idx_categories_created_at ON categories(created_at);
+CREATE INDEX IF NOT EXISTS idx_categories_sync_version ON categories(sync_version);
 
 -- TODO表索引
 CREATE INDEX IF NOT EXISTS idx_todos_user_id ON todos(user_id);
@@ -81,6 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_todos_reminder ON todos(reminder) WHERE reminder 
 
 -- 用户设置表索引
 CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_settings_sync_version ON user_settings(sync_version);
 
 -- 创建更新时间触发器函数
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -114,6 +118,12 @@ END;
 $$ language 'plpgsql';
 
 CREATE TRIGGER update_todos_sync_version BEFORE UPDATE ON todos
+    FOR EACH ROW EXECUTE FUNCTION update_sync_version();
+
+CREATE TRIGGER update_categories_sync_version BEFORE UPDATE ON categories
+    FOR EACH ROW EXECUTE FUNCTION update_sync_version();
+
+CREATE TRIGGER update_user_settings_sync_version BEFORE UPDATE ON user_settings
     FOR EACH ROW EXECUTE FUNCTION update_sync_version();
 
 -- 插入默认分类数据

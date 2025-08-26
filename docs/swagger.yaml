@@ -1,4 +1,54 @@
 definitions:
+  api.BatchSyncRequest:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/repository.CategorySyncItem'
+        type: array
+      settings:
+        $ref: '#/definitions/repository.UserSettingsSyncItem'
+      todos:
+        items:
+          $ref: '#/definitions/repository.TodoSyncItem'
+        type: array
+    type: object
+  api.BatchSyncResponse:
+    properties:
+      conflicts:
+        items:
+          $ref: '#/definitions/repository.SyncResult'
+        type: array
+      errors:
+        items:
+          $ref: '#/definitions/repository.SyncResult'
+        type: array
+      success:
+        items:
+          $ref: '#/definitions/repository.SyncResult'
+        type: array
+    type: object
+  api.CategoryRequest:
+    properties:
+      color:
+        example: '#FF5722'
+        type: string
+      icon:
+        example: work
+        type: string
+      name:
+        example: 工作
+        type: string
+    required:
+    - name
+    type: object
+  api.DeleteCategoryRequest:
+    properties:
+      id:
+        example: 1
+        type: integer
+    required:
+    - id
+    type: object
   api.DeleteTodoRequest:
     properties:
       id:
@@ -7,6 +57,51 @@ definitions:
         type: integer
     required:
     - id
+    type: object
+  api.ExtendedTodoRequest:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      description:
+        example: 学习Go语言基础语法和框架
+        type: string
+      due_date:
+        example: "2023-12-31T23:59:59Z"
+        type: string
+      priority:
+        example: 1
+        type: integer
+      reminder:
+        example: "2023-12-30T09:00:00Z"
+        type: string
+      tags:
+        example:
+        - '["工作"'
+        - '"重要"]'
+        items:
+          type: string
+        type: array
+      title:
+        example: 学习Go语言
+        type: string
+    required:
+    - title
+    type: object
+  api.GetTodosRequest:
+    properties:
+      limit:
+        example: 20
+        type: integer
+      offset:
+        example: 0
+        type: integer
+    type: object
+  api.IncrementalSyncRequest:
+    properties:
+      since:
+        example: 1640995200000
+        type: integer
     type: object
   api.LoginRequest:
     properties:
@@ -55,6 +150,42 @@ definitions:
         example: 成功
         type: string
     type: object
+  api.SearchTodosRequest:
+    properties:
+      keyword:
+        example: 学习
+        type: string
+      limit:
+        example: 20
+        type: integer
+      offset:
+        example: 0
+        type: integer
+    required:
+    - keyword
+    type: object
+  api.SyncResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/repository.CategorySyncItem'
+        type: array
+      server_version:
+        example: 1640995200000
+        type: integer
+      settings:
+        $ref: '#/definitions/repository.UserSettingsSyncItem'
+      todos:
+        items:
+          $ref: '#/definitions/repository.TodoSyncItem'
+        type: array
+    type: object
+  api.SyncVersionResponse:
+    properties:
+      version:
+        example: 1640995200000
+        type: integer
+    type: object
   api.TodoRequest:
     properties:
       description:
@@ -67,6 +198,60 @@ definitions:
         type: string
     required:
     - title
+    type: object
+  api.UpdateCategoryRequest:
+    properties:
+      color:
+        example: '#FF5722'
+        type: string
+      icon:
+        example: work
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: 工作
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  api.UpdateExtendedTodoRequest:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      completed:
+        example: true
+        type: boolean
+      description:
+        example: 更新后的描述
+        type: string
+      due_date:
+        example: "2023-12-31T23:59:59Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      priority:
+        example: 2
+        type: integer
+      reminder:
+        example: "2023-12-30T09:00:00Z"
+        type: string
+      tags:
+        example:
+        - '["工作"'
+        - '"重要"]'
+        items:
+          type: string
+        type: array
+      title:
+        example: 更新后的标题
+        type: string
+    required:
+    - id
     type: object
   api.UpdateTodoRequest:
     properties:
@@ -89,8 +274,98 @@ definitions:
     required:
     - id
     type: object
+  api.UserSettingsRequest:
+    properties:
+      language:
+        example: zh-CN
+        type: string
+      notification_time:
+        example: "09:00"
+        type: string
+      theme:
+        example: light
+        type: string
+      timezone:
+        example: Asia/Shanghai
+        type: string
+    type: object
+  repository.Category:
+    properties:
+      color:
+        description: 分类颜色
+        example: '#FF5722'
+        type: string
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      icon:
+        description: 分类图标
+        example: work
+        type: string
+      id:
+        description: 分类ID
+        example: 1
+        type: integer
+      is_deleted:
+        description: 是否删除
+        example: false
+        type: boolean
+      name:
+        description: 分类名称
+        example: 工作
+        type: string
+      sync_version:
+        description: 同步版本号
+        example: 1640995200000
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      user_id:
+        description: 用户ID
+        example: 1
+        type: integer
+    type: object
+  repository.CategorySyncItem:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      is_deleted:
+        type: boolean
+      name:
+        type: string
+      sync_version:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  repository.SyncResult:
+    properties:
+      action:
+        type: string
+      local_id:
+        type: integer
+      message:
+        type: string
+      server_id:
+        type: integer
+      sync_version:
+        type: integer
+      type:
+        type: string
+    type: object
   repository.Todo:
     properties:
+      category_id:
+        description: 分类ID
+        example: 1
+        type: integer
       completed:
         description: 是否完成
         example: false
@@ -103,6 +378,10 @@ definitions:
         description: 任务描述
         example: 学习Go语言基础语法
         type: string
+      due_date:
+        description: 截止日期
+        example: "2023-12-31T23:59:59Z"
+        type: string
       id:
         description: 任务ID
         example: 1
@@ -111,6 +390,26 @@ definitions:
         description: 是否删除
         example: false
         type: boolean
+      priority:
+        description: 优先级
+        example: 1
+        type: integer
+      reminder:
+        description: 提醒时间
+        example: "2023-12-30T09:00:00Z"
+        type: string
+      sync_version:
+        description: 同步版本号
+        example: 1640995200000
+        type: integer
+      tags:
+        description: 标签
+        example:
+        - '["工作"'
+        - '"重要"]'
+        items:
+          type: string
+        type: array
       title:
         description: 任务标题
         example: 学习Go语言
@@ -124,8 +423,41 @@ definitions:
         example: 1
         type: integer
     type: object
+  repository.TodoSyncItem:
+    properties:
+      category_id:
+        type: integer
+      completed:
+        type: boolean
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: integer
+      is_deleted:
+        type: boolean
+      priority:
+        type: integer
+      reminder:
+        type: string
+      sync_version:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   repository.User:
     properties:
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
       email:
         description: 邮箱
         example: admin@example.com
@@ -134,9 +466,63 @@ definitions:
         description: 用户ID
         example: 1
         type: integer
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
       username:
         description: 用户名
         example: admin
+        type: string
+    type: object
+  repository.UserSettings:
+    properties:
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      language:
+        description: 语言设置
+        example: zh-CN
+        type: string
+      notification_time:
+        description: 通知时间
+        example: "09:00"
+        type: string
+      sync_version:
+        description: 同步版本号
+        example: 1640995200000
+        type: integer
+      theme:
+        description: 主题设置 (light/dark/auto)
+        example: light
+        type: string
+      timezone:
+        description: 时区设置
+        example: Asia/Shanghai
+        type: string
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      user_id:
+        description: 用户ID
+        example: 1
+        type: integer
+    type: object
+  repository.UserSettingsSyncItem:
+    properties:
+      language:
+        type: string
+      notification_time:
+        type: string
+      sync_version:
+        type: integer
+      theme:
+        type: string
+      timezone:
+        type: string
+      updated_at:
         type: string
     type: object
 host: 127.0.0.1:8080
@@ -299,6 +685,297 @@ paths:
       security:
       - BearerAuth: []
       summary: 更新TODO任务
+      tags:
+      - TODO管理
+  /api/v2/categories:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前用户的所有分类
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户的分类列表
+      tags:
+      - 分类管理
+  /api/v2/categories/create:
+    post:
+      consumes:
+      - application/json
+      description: 为当前用户创建一个新的分类
+      parameters:
+      - description: 分类信息
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/api.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建新分类
+      tags:
+      - 分类管理
+  /api/v2/categories/delete:
+    post:
+      consumes:
+      - application/json
+      description: 删除指定的分类（软删除）
+      parameters:
+      - description: 删除信息
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/api.DeleteCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除分类
+      tags:
+      - 分类管理
+  /api/v2/categories/update:
+    post:
+      consumes:
+      - application/json
+      description: 更新指定的分类信息
+      parameters:
+      - description: 更新信息
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新分类
+      tags:
+      - 分类管理
+  /api/v2/settings:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前用户的个性化设置
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户设置
+      tags:
+      - 用户设置
+  /api/v2/settings/update:
+    post:
+      consumes:
+      - application/json
+      description: 更新当前用户的个性化设置
+      parameters:
+      - description: 设置信息
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/api.UserSettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新用户设置
+      tags:
+      - 用户设置
+  /api/v2/sync/batch:
+    post:
+      consumes:
+      - application/json
+      description: 批量上传客户端数据并处理冲突
+      parameters:
+      - description: 批量同步数据
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.BatchSyncRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量同步数据
+      tags:
+      - 数据同步
+  /api/v2/sync/todos:
+    post:
+      consumes:
+      - application/json
+      description: 基于时间戳获取增量更新的数据
+      parameters:
+      - description: 同步参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.IncrementalSyncRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 增量同步数据
+      tags:
+      - 数据同步
+  /api/v2/sync/version:
+    post:
+      consumes:
+      - application/json
+      description: 获取服务器当前的同步版本号，用于增量同步
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前同步版本号
+      tags:
+      - 数据同步
+  /api/v2/todos/create:
+    post:
+      consumes:
+      - application/json
+      description: 为当前用户创建一个新的TODO任务，支持优先级、标签等扩展字段
+      parameters:
+      - description: TODO信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.ExtendedTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建新的扩展TODO任务
+      tags:
+      - TODO管理
+  /api/v2/todos/list:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前用户的所有TODO任务，支持分页和扩展字段
+      parameters:
+      - description: 分页参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.GetTodosRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户的扩展TODO列表
+      tags:
+      - TODO管理
+  /api/v2/todos/search:
+    post:
+      consumes:
+      - application/json
+      description: 根据关键词搜索用户的TODO任务，支持标题和描述搜索
+      parameters:
+      - description: 搜索参数
+        in: body
+        name: search
+        required: true
+        schema:
+          $ref: '#/definitions/api.SearchTodosRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 搜索失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 搜索TODO任务
+      tags:
+      - TODO管理
+  /api/v2/todos/update:
+    post:
+      consumes:
+      - application/json
+      description: 更新指定的TODO任务信息，支持扩展字段的部分更新
+      parameters:
+      - description: 更新信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateExtendedTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新扩展TODO任务
       tags:
       - TODO管理
 schemes:

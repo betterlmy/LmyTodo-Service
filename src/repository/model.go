@@ -93,14 +93,15 @@ type User struct {
 
 // Category 分类模型
 type Category struct {
-	ID        int       `json:"id" example:"1" swaggertype:"integer" description:"分类ID"`                           // 分类ID
-	UserID    int       `json:"user_id" example:"1" swaggertype:"integer" description:"用户ID"`                      // 用户ID
-	Name      string    `json:"name" example:"工作" swaggertype:"string" description:"分类名称"`                         // 分类名称
-	Color     string    `json:"color" example:"#FF5722" swaggertype:"string" description:"分类颜色"`                   // 分类颜色
-	Icon      string    `json:"icon" example:"work" swaggertype:"string" description:"分类图标"`                       // 分类图标
-	CreatedAt time.Time `json:"created_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"创建时间"` // 创建时间
-	UpdatedAt time.Time `json:"updated_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"更新时间"` // 更新时间
-	IsDeleted bool      `json:"is_deleted" example:"false" swaggertype:"boolean" description:"是否删除"`               // 是否删除
+	ID          int       `json:"id" example:"1" swaggertype:"integer" description:"分类ID"`                           // 分类ID
+	UserID      int       `json:"user_id" example:"1" swaggertype:"integer" description:"用户ID"`                      // 用户ID
+	Name        string    `json:"name" example:"工作" swaggertype:"string" description:"分类名称"`                         // 分类名称
+	Color       string    `json:"color" example:"#FF5722" swaggertype:"string" description:"分类颜色"`                   // 分类颜色
+	Icon        string    `json:"icon" example:"work" swaggertype:"string" description:"分类图标"`                       // 分类图标
+	CreatedAt   time.Time `json:"created_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"创建时间"` // 创建时间
+	UpdatedAt   time.Time `json:"updated_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"更新时间"` // 更新时间
+	IsDeleted   bool      `json:"is_deleted" example:"false" swaggertype:"boolean" description:"是否删除"`               // 是否删除
+	SyncVersion int64     `json:"sync_version" example:"1640995200000" swaggertype:"integer" description:"同步版本号"`    // 同步版本号
 }
 
 // UserSettings 用户设置模型
@@ -112,6 +113,7 @@ type UserSettings struct {
 	TimeZone         string    `json:"timezone" example:"Asia/Shanghai" swaggertype:"string" description:"时区设置"`          // 时区设置
 	CreatedAt        time.Time `json:"created_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"创建时间"` // 创建时间
 	UpdatedAt        time.Time `json:"updated_at" example:"2023-01-01T00:00:00Z" swaggertype:"string" description:"更新时间"` // 更新时间
+	SyncVersion      int64     `json:"sync_version" example:"1640995200000" swaggertype:"integer" description:"同步版本号"`    // 同步版本号
 }
 
 // Todo TODO任务模型（扩展版）
