@@ -3,12 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
+	"todo-service/docs"
 	"todo-service/global"
 	"todo-service/src/api"
 	"todo-service/src/repository"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func initRouter(r *gin.Engine) {
@@ -28,6 +31,10 @@ func initRouter(r *gin.Engine) {
 
 	// 添加日志中间件
 	r.Use(api.LoggerMiddleware())
+
+	// Swagger文档路由
+	r.GET("/zane/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// 公开路由
 	r.POST("/api/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, api.SuccessResponse(gin.H{"message": "Test POST endpoint"}))
@@ -81,6 +88,14 @@ func initRouter(r *gin.Engine) {
 // @BasePath
 // @schemes http
 func main() {
+	// 初始化Swagger文档
+	docs.SwaggerInfo.Title = "TODO API"
+	docs.SwaggerInfo.Description = "TODO服务后端API接口文档"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "127.0.0.1:8080"
+	docs.SwaggerInfo.BasePath = ""
+	docs.SwaggerInfo.Schemes = []string{"http"}
+
 	// 初始化数据库
 	config := repository.GetDatabaseConfig()
 	var err error
