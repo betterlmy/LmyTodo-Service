@@ -37,7 +37,7 @@
 
 - [ ] 5. 创建 iOS 项目基础架构
 
-  - 创建新的 iOS 项目，配置 SwiftUI 和 Core Data
+  - 在ios_src目录下创建新的 iOS 项目，配置 SwiftUI 和 Core Data
   - 实现 MVVM 架构的基础类，包括 Repository、ViewModel、APIClient
   - 配置 Core Data 模型，包括 TodoEntity、CategoryEntity、UserSettingsEntity
   - 实现基础的网络层，包括 APIClient、APIEndpoint、错误处理

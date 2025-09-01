@@ -28,49 +28,42 @@ func initRouter(r *gin.Engine) {
 
 	// 添加日志中间件
 	r.Use(api.LoggerMiddleware())
-
 	// 公开路由
 	r.POST("/api/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, api.SuccessResponse(gin.H{"message": "Test POST endpoint"}))
 	})
-	r.POST("/api/register", api.Register)
-	r.POST("/api/login", api.Login)
+	r.POST("/api/auth/register", api.Register)
+	r.POST("/api/auth/login", api.Login)
 
-	// 需要认证的路由 - v1 API (保持向后兼容)
-	auth := r.Group("/api")
-	auth.Use(api.AuthMiddleware())
+	// v1 API - 扩展功能
+	v1 := r.Group("/api/v1")
+	v1.Use(api.AuthMiddleware())
 	{
-		auth.POST("/todos/list", api.GetTodos)
-		auth.POST("/todos/create", api.CreateTodo)
-		auth.POST("/todos/update", api.UpdateTodo)
-		auth.POST("/todos/delete", api.DeleteTodo)
-		auth.POST("/profile", api.GetProfile)
-	}
-
-	// v2 API - 扩展功能
-	v2 := r.Group("/api/v2")
-	v2.Use(api.AuthMiddleware())
-	{
+		v1.POST("/todos/list", api.GetTodos)
+		v1.POST("/todos/create", api.CreateTodo)
+		v1.POST("/todos/update", api.UpdateTodo)
+		v1.POST("/todos/delete", api.DeleteTodo)
+		v1.POST("/profile", api.GetProfile)
 		// 扩展TODO管理
-		v2.POST("/todos/list", api.GetTodosExtended)
-		v2.POST("/todos/create", api.CreateTodoExtended)
-		v2.POST("/todos/update", api.UpdateTodoExtended)
-		v2.POST("/todos/search", api.SearchTodos)
+		v1.POST("/todos/list", api.GetTodosExtended)
+		v1.POST("/todos/create", api.CreateTodoExtended)
+		v1.POST("/todos/update", api.UpdateTodoExtended)
+		v1.POST("/todos/search", api.SearchTodos)
 
 		// 分类管理
-		v2.POST("/categories", api.GetCategories)
-		v2.POST("/categories/create", api.CreateCategory)
-		v2.POST("/categories/update", api.UpdateCategory)
-		v2.POST("/categories/delete", api.DeleteCategory)
+		v1.POST("/categories", api.GetCategories)
+		v1.POST("/categories/create", api.CreateCategory)
+		v1.POST("/categories/update", api.UpdateCategory)
+		v1.POST("/categories/delete", api.DeleteCategory)
 
 		// 用户设置
-		v2.POST("/settings", api.GetUserSettings)
-		v2.POST("/settings/update", api.UpdateUserSettings)
+		v1.POST("/settings", api.GetUserSettings)
+		v1.POST("/settings/update", api.UpdateUserSettings)
 
 		// 数据同步
-		v2.POST("/sync/version", api.GetSyncVersion)
-		v2.POST("/sync/todos", api.IncrementalSync)
-		v2.POST("/sync/batch", api.BatchSync)
+		v1.POST("/sync/version", api.GetSyncVersion)
+		v1.POST("/sync/todos", api.IncrementalSync)
+		v1.POST("/sync/batch", api.BatchSync)
 	}
 }
 

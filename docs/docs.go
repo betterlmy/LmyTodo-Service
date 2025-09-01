@@ -22,7 +22,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/login": {
+        "/api/auth/login": {
             "post": {
                 "description": "用户登录获取JWT token",
                 "consumes": [
@@ -56,35 +56,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/profile": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取当前登录用户的基本信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户管理"
-                ],
-                "summary": "获取当前用户信息",
-                "responses": {
-                    "200": {
-                        "description": "获取失败",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/register": {
+        "/api/auth/register": {
             "post": {
                 "description": "创建新用户账号",
                 "consumes": [
@@ -118,152 +90,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/todos/create": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "为当前用户创建一个新的TODO任务",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TODO管理"
-                ],
-                "summary": "创建新的TODO任务",
-                "parameters": [
-                    {
-                        "description": "TODO信息",
-                        "name": "todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.TodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "创建失败",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/todos/delete": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "删除指定的TODO任务",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TODO管理"
-                ],
-                "summary": "删除TODO任务",
-                "parameters": [
-                    {
-                        "description": "删除信息",
-                        "name": "todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.DeleteTodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "删除失败",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/todos/list": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取当前用户的所有TODO任务，按创建时间倒序排列",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TODO管理"
-                ],
-                "summary": "获取用户的TODO列表",
-                "responses": {
-                    "200": {
-                        "description": "获取失败",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/todos/update": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "更新指定的TODO任务信息，支持部分字段更新",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TODO管理"
-                ],
-                "summary": "更新TODO任务",
-                "parameters": [
-                    {
-                        "description": "更新信息",
-                        "name": "todo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.UpdateTodoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "更新失败",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v2/categories": {
+        "/api/v1/categories": {
             "post": {
                 "security": [
                     {
@@ -291,7 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/categories/create": {
+        "/api/v1/categories/create": {
             "post": {
                 "security": [
                     {
@@ -330,7 +157,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/categories/delete": {
+        "/api/v1/categories/delete": {
             "post": {
                 "security": [
                     {
@@ -369,7 +196,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/categories/update": {
+        "/api/v1/categories/update": {
             "post": {
                 "security": [
                     {
@@ -408,7 +235,35 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/settings": {
+        "/api/v1/profile": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前登录用户的基本信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "获取当前用户信息",
+                "responses": {
+                    "200": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/settings": {
             "post": {
                 "security": [
                     {
@@ -436,7 +291,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/settings/update": {
+        "/api/v1/settings/update": {
             "post": {
                 "security": [
                     {
@@ -475,7 +330,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/sync/batch": {
+        "/api/v1/sync/batch": {
             "post": {
                 "security": [
                     {
@@ -514,7 +369,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/sync/todos": {
+        "/api/v1/sync/todos": {
             "post": {
                 "security": [
                     {
@@ -553,7 +408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/sync/version": {
+        "/api/v1/sync/version": {
             "post": {
                 "security": [
                     {
@@ -581,7 +436,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/todos/create": {
+        "/api/v1/todos/create": {
             "post": {
                 "security": [
                     {
@@ -620,7 +475,46 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/todos/list": {
+        "/api/v1/todos/delete": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除指定的TODO任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TODO管理"
+                ],
+                "summary": "删除TODO任务",
+                "parameters": [
+                    {
+                        "description": "删除信息",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.DeleteTodoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/todos/list": {
             "post": {
                 "security": [
                     {
@@ -659,7 +553,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/todos/search": {
+        "/api/v1/todos/search": {
             "post": {
                 "security": [
                     {
@@ -698,7 +592,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v2/todos/update": {
+        "/api/v1/todos/update": {
             "post": {
                 "security": [
                     {

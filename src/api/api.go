@@ -43,7 +43,7 @@ import (
 // @Param user body RegisterRequest true "注册信息"
 // @Success 200 {object} Response{data=map[string]string} "注册成功"
 // @Failure 200 {object} Response "注册失败"
-// @Router /api/register [post]
+// @Router /api/auth/register [post]
 func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -82,7 +82,7 @@ func Register(c *gin.Context) {
 // @Param credentials body LoginRequest true "登录凭据"
 // @Success 200 {object} Response{data=map[string]interface{}} "登录成功，返回token和用户信息"
 // @Failure 200 {object} Response "登录失败"
-// @Router /api/login [post]
+// @Router /api/auth/login [post]
 func Login(c *gin.Context) {
 	var req LoginRequest
 	defer func() {
@@ -245,12 +245,12 @@ func LoggerMiddleware() gin.HandlerFunc {
 // @Security BearerAuth
 // @Success 200 {object} Response{data=[]repository.Todo} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/todos/list [post]
+// @Router /api/v1/todos/list [post]
 func GetTodos(c *gin.Context) {
 	userID := c.GetInt("userID")
 
 	rows, err := global.Db.Query(`
-		SELECT id, title, description, completed, created_at, updated_at 
+		SELECT id, title, description, completed, created_at, updated_at
 		FROM todos WHERE user_id = ? ORDER BY created_at DESC`, userID)
 	if err != nil {
 		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "获取TODO列表失败"))
@@ -283,7 +283,7 @@ func GetTodos(c *gin.Context) {
 // @Param todo body TodoRequest true "TODO信息"
 // @Success 200 {object} Response{data=repository.Todo} "创建成功"
 // @Failure 200 {object} Response "创建失败"
-// @Router /api/todos/create [post]
+// @Router /api/v1/todos/create [post]
 func CreateTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req TodoRequest
@@ -293,7 +293,7 @@ func CreateTodo(c *gin.Context) {
 	}
 
 	result, err := global.Db.Exec(`
-		INSERT INTO todos (user_id, title, description) 
+		INSERT INTO todos (user_id, title, description)
 		VALUES (?, ?, ?)`, userID, req.Title, req.Description)
 	if err != nil {
 		c.JSON(http.StatusOK, ErrorResponse(CodeInternalError, "创建TODO失败"))
@@ -324,7 +324,7 @@ func CreateTodo(c *gin.Context) {
 // @Param todo body UpdateTodoRequest true "更新信息"
 // @Success 200 {object} Response{data=map[string]string} "更新成功"
 // @Failure 200 {object} Response "更新失败"
-// @Router /api/todos/update [post]
+// @Router /api/v1/todos/update [post]
 func UpdateTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req UpdateTodoRequest
@@ -385,7 +385,7 @@ func UpdateTodo(c *gin.Context) {
 // @Param todo body DeleteTodoRequest true "删除信息"
 // @Success 200 {object} Response{data=map[string]string} "删除成功"
 // @Failure 200 {object} Response "删除失败"
-// @Router /api/todos/delete [post]
+// @Router /api/v1/todos/delete [post]
 func DeleteTodo(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req DeleteTodoRequest
@@ -419,7 +419,7 @@ func DeleteTodo(c *gin.Context) {
 // @Security BearerAuth
 // @Success 200 {object} Response{data=repository.User} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/profile [post]
+// @Router /api/v1/profile [post]
 func GetProfile(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -446,7 +446,7 @@ func GetProfile(c *gin.Context) {
 // @Param request body GetTodosRequest true "分页参数"
 // @Success 200 {object} Response{data=[]repository.Todo} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/v2/todos/list [post]
+// @Router /api/v1/todos/list [post]
 func GetTodosExtended(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req GetTodosRequest
@@ -484,7 +484,7 @@ func GetTodosExtended(c *gin.Context) {
 // @Param todo body ExtendedTodoRequest true "TODO信息"
 // @Success 200 {object} Response{data=repository.Todo} "创建成功"
 // @Failure 200 {object} Response "创建失败"
-// @Router /api/v2/todos/create [post]
+// @Router /api/v1/todos/create [post]
 func CreateTodoExtended(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req ExtendedTodoRequest
@@ -541,7 +541,7 @@ func CreateTodoExtended(c *gin.Context) {
 // @Param todo body UpdateExtendedTodoRequest true "更新信息"
 // @Success 200 {object} Response{data=map[string]string} "更新成功"
 // @Failure 200 {object} Response "更新失败"
-// @Router /api/v2/todos/update [post]
+// @Router /api/v1/todos/update [post]
 func UpdateTodoExtended(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req UpdateExtendedTodoRequest
@@ -615,7 +615,7 @@ func UpdateTodoExtended(c *gin.Context) {
 // @Param search body SearchTodosRequest true "搜索参数"
 // @Success 200 {object} Response{data=[]repository.Todo} "搜索成功"
 // @Failure 200 {object} Response "搜索失败"
-// @Router /api/v2/todos/search [post]
+// @Router /api/v1/todos/search [post]
 func SearchTodos(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req SearchTodosRequest
@@ -654,7 +654,7 @@ func SearchTodos(c *gin.Context) {
 // @Security BearerAuth
 // @Success 200 {object} Response{data=[]repository.Category} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/v2/categories [post]
+// @Router /api/v1/categories [post]
 func GetCategories(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -678,7 +678,7 @@ func GetCategories(c *gin.Context) {
 // @Param category body CategoryRequest true "分类信息"
 // @Success 200 {object} Response{data=repository.Category} "创建成功"
 // @Failure 200 {object} Response "创建失败"
-// @Router /api/v2/categories/create [post]
+// @Router /api/v1/categories/create [post]
 func CreateCategory(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req CategoryRequest
@@ -726,7 +726,7 @@ func CreateCategory(c *gin.Context) {
 // @Param category body UpdateCategoryRequest true "更新信息"
 // @Success 200 {object} Response{data=map[string]string} "更新成功"
 // @Failure 200 {object} Response "更新失败"
-// @Router /api/v2/categories/update [post]
+// @Router /api/v1/categories/update [post]
 func UpdateCategory(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req UpdateCategoryRequest
@@ -767,7 +767,7 @@ func UpdateCategory(c *gin.Context) {
 // @Param category body DeleteCategoryRequest true "删除信息"
 // @Success 200 {object} Response{data=map[string]string} "删除成功"
 // @Failure 200 {object} Response "删除失败"
-// @Router /api/v2/categories/delete [post]
+// @Router /api/v1/categories/delete [post]
 func DeleteCategory(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req DeleteCategoryRequest
@@ -797,7 +797,7 @@ func DeleteCategory(c *gin.Context) {
 // @Security BearerAuth
 // @Success 200 {object} Response{data=repository.UserSettings} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/v2/settings [post]
+// @Router /api/v1/settings [post]
 func GetUserSettings(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -821,7 +821,7 @@ func GetUserSettings(c *gin.Context) {
 // @Param settings body UserSettingsRequest true "设置信息"
 // @Success 200 {object} Response{data=map[string]string} "更新成功"
 // @Failure 200 {object} Response "更新失败"
-// @Router /api/v2/settings/update [post]
+// @Router /api/v1/settings/update [post]
 func UpdateUserSettings(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req UserSettingsRequest
@@ -865,7 +865,7 @@ func UpdateUserSettings(c *gin.Context) {
 // @Security BearerAuth
 // @Success 200 {object} Response{data=SyncVersionResponse} "获取成功"
 // @Failure 200 {object} Response "获取失败"
-// @Router /api/v2/sync/version [post]
+// @Router /api/v1/sync/version [post]
 func GetSyncVersion(c *gin.Context) {
 	userID := c.GetInt("userID")
 
@@ -892,7 +892,7 @@ func GetSyncVersion(c *gin.Context) {
 // @Param request body IncrementalSyncRequest true "同步参数"
 // @Success 200 {object} Response{data=SyncResponse} "同步成功"
 // @Failure 200 {object} Response "同步失败"
-// @Router /api/v2/sync/todos [post]
+// @Router /api/v1/sync/todos [post]
 func IncrementalSync(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req IncrementalSyncRequest
@@ -1005,7 +1005,7 @@ func IncrementalSync(c *gin.Context) {
 // @Param request body BatchSyncRequest true "批量同步数据"
 // @Success 200 {object} Response{data=BatchSyncResponse} "同步成功"
 // @Failure 200 {object} Response "同步失败"
-// @Router /api/v2/sync/batch [post]
+// @Router /api/v1/sync/batch [post]
 func BatchSync(c *gin.Context) {
 	userID := c.GetInt("userID")
 	var req BatchSyncRequest

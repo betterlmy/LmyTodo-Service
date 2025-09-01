@@ -537,7 +537,7 @@ info:
   title: TODO API
   version: "1.0"
 paths:
-  /api/login:
+  /api/auth/login:
     post:
       consumes:
       - application/json
@@ -559,24 +559,7 @@ paths:
       summary: 用户登录
       tags:
       - 用户认证
-  /api/profile:
-    post:
-      consumes:
-      - application/json
-      description: 获取当前登录用户的基本信息
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取失败
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerAuth: []
-      summary: 获取当前用户信息
-      tags:
-      - 用户管理
-  /api/register:
+  /api/auth/register:
     post:
       consumes:
       - application/json
@@ -598,96 +581,7 @@ paths:
       summary: 用户注册
       tags:
       - 用户认证
-  /api/todos/create:
-    post:
-      consumes:
-      - application/json
-      description: 为当前用户创建一个新的TODO任务
-      parameters:
-      - description: TODO信息
-        in: body
-        name: todo
-        required: true
-        schema:
-          $ref: '#/definitions/api.TodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 创建失败
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerAuth: []
-      summary: 创建新的TODO任务
-      tags:
-      - TODO管理
-  /api/todos/delete:
-    post:
-      consumes:
-      - application/json
-      description: 删除指定的TODO任务
-      parameters:
-      - description: 删除信息
-        in: body
-        name: todo
-        required: true
-        schema:
-          $ref: '#/definitions/api.DeleteTodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 删除失败
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerAuth: []
-      summary: 删除TODO任务
-      tags:
-      - TODO管理
-  /api/todos/list:
-    post:
-      consumes:
-      - application/json
-      description: 获取当前用户的所有TODO任务，按创建时间倒序排列
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取失败
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerAuth: []
-      summary: 获取用户的TODO列表
-      tags:
-      - TODO管理
-  /api/todos/update:
-    post:
-      consumes:
-      - application/json
-      description: 更新指定的TODO任务信息，支持部分字段更新
-      parameters:
-      - description: 更新信息
-        in: body
-        name: todo
-        required: true
-        schema:
-          $ref: '#/definitions/api.UpdateTodoRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 更新失败
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerAuth: []
-      summary: 更新TODO任务
-      tags:
-      - TODO管理
-  /api/v2/categories:
+  /api/v1/categories:
     post:
       consumes:
       - application/json
@@ -704,7 +598,7 @@ paths:
       summary: 获取用户的分类列表
       tags:
       - 分类管理
-  /api/v2/categories/create:
+  /api/v1/categories/create:
     post:
       consumes:
       - application/json
@@ -728,7 +622,7 @@ paths:
       summary: 创建新分类
       tags:
       - 分类管理
-  /api/v2/categories/delete:
+  /api/v1/categories/delete:
     post:
       consumes:
       - application/json
@@ -752,7 +646,7 @@ paths:
       summary: 删除分类
       tags:
       - 分类管理
-  /api/v2/categories/update:
+  /api/v1/categories/update:
     post:
       consumes:
       - application/json
@@ -776,7 +670,24 @@ paths:
       summary: 更新分类
       tags:
       - 分类管理
-  /api/v2/settings:
+  /api/v1/profile:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的基本信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 用户管理
+  /api/v1/settings:
     post:
       consumes:
       - application/json
@@ -793,7 +704,7 @@ paths:
       summary: 获取用户设置
       tags:
       - 用户设置
-  /api/v2/settings/update:
+  /api/v1/settings/update:
     post:
       consumes:
       - application/json
@@ -817,7 +728,7 @@ paths:
       summary: 更新用户设置
       tags:
       - 用户设置
-  /api/v2/sync/batch:
+  /api/v1/sync/batch:
     post:
       consumes:
       - application/json
@@ -841,7 +752,7 @@ paths:
       summary: 批量同步数据
       tags:
       - 数据同步
-  /api/v2/sync/todos:
+  /api/v1/sync/todos:
     post:
       consumes:
       - application/json
@@ -865,7 +776,7 @@ paths:
       summary: 增量同步数据
       tags:
       - 数据同步
-  /api/v2/sync/version:
+  /api/v1/sync/version:
     post:
       consumes:
       - application/json
@@ -882,7 +793,7 @@ paths:
       summary: 获取当前同步版本号
       tags:
       - 数据同步
-  /api/v2/todos/create:
+  /api/v1/todos/create:
     post:
       consumes:
       - application/json
@@ -906,7 +817,31 @@ paths:
       summary: 创建新的扩展TODO任务
       tags:
       - TODO管理
-  /api/v2/todos/list:
+  /api/v1/todos/delete:
+    post:
+      consumes:
+      - application/json
+      description: 删除指定的TODO任务
+      parameters:
+      - description: 删除信息
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/api.DeleteTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除TODO任务
+      tags:
+      - TODO管理
+  /api/v1/todos/list:
     post:
       consumes:
       - application/json
@@ -930,7 +865,7 @@ paths:
       summary: 获取用户的扩展TODO列表
       tags:
       - TODO管理
-  /api/v2/todos/search:
+  /api/v1/todos/search:
     post:
       consumes:
       - application/json
@@ -954,7 +889,7 @@ paths:
       summary: 搜索TODO任务
       tags:
       - TODO管理
-  /api/v2/todos/update:
+  /api/v1/todos/update:
     post:
       consumes:
       - application/json
