@@ -39,10 +39,10 @@ func initRouter(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	v1.Use(api.AuthMiddleware())
 	{
-		v1.POST("/todos/list", api.GetTodos)
-		v1.POST("/todos/create", api.CreateTodo)
-		v1.POST("/todos/update", api.UpdateTodo)
-		v1.POST("/todos/delete", api.DeleteTodo)
+		// v1.POST("/todos/list", api.GetTodos)
+		// v1.POST("/todos/create", api.CreateTodo)
+		// v1.POST("/todos/update", api.UpdateTodo)
+		// v1.POST("/todos/delete", api.DeleteTodo)
 		v1.POST("/profile", api.GetProfile)
 		// 扩展TODO管理
 		v1.POST("/todos/list", api.GetTodosExtended)
